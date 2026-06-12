@@ -6,13 +6,26 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(url);
     const html = await response.text();
-    
-    // Server-side logic to detect AI blocking
-    const isGptBlocked = html.includes('GPTBot') || html.includes('OAI-SearchBot');
-    const hasSchema = html.includes('application/ld+json');
-    
-    res.status(200).json({ isGptBlocked, hasSchema });
+
+    // Define the AI Engines/Bots we want to track
+    const bots = [
+      { name: "OpenAI (GPTBot)", id: "GPTBot" },
+      { name: "OpenAI (ChatGPT-User)", id: "ChatGPT-User" },
+      { name: "Anthropic (Claude)", id: "ClaudeBot" },
+      { name: "Google (Gemini)", id: "Google-Extended" },
+      { name: "Perplexity", id: "PerplexityBot" },
+      { name: "Common Crawl", id: "CCBot" }
+    ];
+
+    // Check which ones are found in the HTML/Robots instructions
+    const scanResults = bots.map(bot => ({
+      name: bot.name,
+      // If the bot ID is present, it's blocked (assuming typical robots.txt patterns)
+      isBlocked: html.includes(bot.id)
+    }));
+
+    res.status(200).json({ scanResults });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch website" });
+    res.status(500).json({ error: "Failed to fetch website content." });
   }
 }
