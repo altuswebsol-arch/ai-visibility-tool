@@ -5,25 +5,22 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  const runAudit = async () => {
-    setLoading(true);
-    setResult(null);
-
-    try {
-      const response = await fetch('/api/audit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      
-      const data = await response.json();
-      setResult(data);
-    } catch (err) {
-      alert("Scan failed. Ensure you are on a live Vercel deployment.");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const runAudit = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch('/api/audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await response.json();
+    setResult(data);
+  } catch (err) {
+    alert("Scan failed.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{ padding: '40px', maxWidth: '500px', margin: 'auto', fontFamily: 'sans-serif' }}>
